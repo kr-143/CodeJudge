@@ -6,7 +6,7 @@ public class CustomerLeadModel {
 	private String first_name;
 	private String last_name;
 	private String mobile;
-	private long email;
+	private String email;
 	private String location_type;
 	private String location_string;
 	private String status;
@@ -34,10 +34,10 @@ public class CustomerLeadModel {
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
-	public long getEmail() {
+	public String getEmail() {
 		return email;
 	}
-	public void setEmail(long email) {
+	public void setEmail(String email) {
 		this.email = email;
 	}
 	public String getLocation_type() {

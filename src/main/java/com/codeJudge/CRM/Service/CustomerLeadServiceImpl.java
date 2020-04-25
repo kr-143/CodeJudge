@@ -46,6 +46,7 @@ public class CustomerLeadServiceImpl implements CustomerLeadService {
 				CustomerLead lead = findById.get();
 				lead = generateEntity(model);
 				lead.setStatus(StatusEnum.CREATED.name());
+				lead.setId(id);
 				lead = cusRepo.save(lead);
 				return generateEntity(lead);
 			}
@@ -63,8 +64,9 @@ public class CustomerLeadServiceImpl implements CustomerLeadService {
 		lead.setFirstName(model.getFirst_name());
 		lead.setLastName(model.getLast_name());
 		lead.setMobile(model.getMobile());
+		lead.setEmail(model.getEmail());
 		lead.setLocationString(model.getLocation_string());
-		lead.setLocationType(LocationType.valueOf(model.getLocation_type()).name());
+		lead.setLocationType(LocationType.valueOf(model.getLocation_type()).toString());
 		return lead;
 	}
 
@@ -73,8 +75,9 @@ public class CustomerLeadServiceImpl implements CustomerLeadService {
 		lead.setFirst_name(model.getFirstName());
 		lead.setLast_name(model.getLastName());
 		lead.setMobile(model.getMobile());
+		lead.setEmail(model.getEmail());
 		lead.setLocation_string(model.getLocationString());
-		lead.setLocation_type(LocationType.valueOf(model.getLocationType()).name());
+		lead.setLocation_type(LocationType.valueOf(model.getLocationType()).toString());
 		lead.setStatus(model.getStatus());
 		lead.setId(model.getId());
 		return lead;
@@ -87,6 +90,7 @@ public class CustomerLeadServiceImpl implements CustomerLeadService {
 			if (findById.isPresent()) {
 				CustomerLead lead = findById.get();
 				lead.setStatus(StatusEnum.CONTACTED.name());
+				lead.setId(id);
 				lead = cusRepo.save(lead);
 				return generateEntity(lead);
 			}

@@ -14,7 +14,7 @@ public class CustomerLead {
 	private String firstName;
 	private String lastName;
 	private String mobile;
-	private long email;
+	private String email;
 	private String locationType;
 	private String locationString;
 	private String status;
@@ -53,11 +53,11 @@ public class CustomerLead {
 		this.mobile = mobile;
 	}
 
-	public long getEmail() {
+	public String getEmail() {
 		return email;
 	}
 
-	public void setEmail(long email) {
+	public void setEmail(String email) {
 		this.email = email;
 	}
 

@@ -1,25 +1,29 @@
 package com.codeJudge.CRM.Controller;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codeJudge.CRM.Model.CustomerLeadModel;
 import com.codeJudge.CRM.Model.FailureReponse;
 import com.codeJudge.CRM.Service.CustomerLeadService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 @RestController
+@Component
 public class CustomerleadController {
 
 	@Autowired
@@ -48,7 +52,7 @@ public class CustomerleadController {
 	}
 
 	@PostMapping("/api/leads")
-	public ResponseEntity<String> saveCustomerLeads(CustomerLeadModel leadModel) {
+	public ResponseEntity<String> saveCustomerLeads(@RequestBody CustomerLeadModel leadModel) {
 		ResponseEntity<String> response = null;
 		try {
 			CustomerLeadModel fetchCustomerLeadModel = cusService.saveCustomerLead(leadModel);
@@ -59,6 +63,7 @@ public class CustomerleadController {
 				throw new Exception();
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			try {
 				String failResponse = prepareResponse(null, "Failure");
 				response = new ResponseEntity<>(failResponse, HttpStatus.BAD_REQUEST);
@@ -69,12 +74,12 @@ public class CustomerleadController {
 		return response;
 	}
 
-	@PutMapping("/api/leads/{lead_Id}")
+	@PutMapping("/api/mark_lead/{lead_Id}")
 	public ResponseEntity<String> UpdateCustomerLeadsAsMarked(@PathVariable("lead_Id") Integer leadId) {
 		ResponseEntity<String> response = null;
 		try {
 			if (null != cusService.updateCustomerLeadAsMarked(leadId)) {
-				String prepareResponseForPutMapping = prepareResponseForPutMapping("Success");
+				String prepareResponseForPutMapping = prepareResponseForMarkMapping("Success");
 				response = new ResponseEntity<>(prepareResponseForPutMapping, HttpStatus.OK);
 			} else {
 				throw new Exception();
@@ -82,7 +87,7 @@ public class CustomerleadController {
 		} catch (Exception e) {
 			String failResponse;
 			try {
-				failResponse = prepareResponseForPutMapping("Failure");
+				failResponse = prepareResponseForMarkMapping("Failure");
 				response = new ResponseEntity<>(failResponse, HttpStatus.BAD_REQUEST);
 			} catch (Exception e1) {
 				e1.printStackTrace();
@@ -93,7 +98,7 @@ public class CustomerleadController {
 	}
 
 	@PutMapping("/api/leads/{lead_Id}")
-	public ResponseEntity<String> UpdateCustomerLeads(CustomerLeadModel leadModel,
+	public ResponseEntity<String> UpdateCustomerLeads( @RequestBody CustomerLeadModel leadModel,
 			@PathVariable("lead_Id") Integer leadId) {
 		ResponseEntity<String> response = null;
 		try {
@@ -141,26 +146,44 @@ public class CustomerleadController {
 		if (status.equalsIgnoreCase("Success")) {
 			return mapper.writeValueAsString(model);
 		} else {
-			SimpleBeanPropertyFilter theFilter = SimpleBeanPropertyFilter.serializeAllExcept("Communication");
+			SimpleBeanPropertyFilter theFilter = SimpleBeanPropertyFilter.serializeAllExcept("communication");
 			FilterProvider filters = new SimpleFilterProvider().addFilter("myFilter", theFilter);
 			FailureReponse response = new FailureReponse();
 			response.setStatus("failure");
 			response.setReason("Failed.....");
-			return mapper.writer(filters).writeValueAsString(model);
-		}
+			return mapper.writer(filters).writeValueAsString(response);
+		}	
 	}
 
 	private String prepareResponseForPutMapping(String status) throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		if (status.equalsIgnoreCase("Success")) {
-			SimpleBeanPropertyFilter theFilter = SimpleBeanPropertyFilter.serializeAllExcept("Communication")
-					.serializeAllExcept("reason");
+			SimpleBeanPropertyFilter theFilter = SimpleBeanPropertyFilter.serializeAllExcept(new String[] {"communication","reason"});
 			FilterProvider filters = new SimpleFilterProvider().addFilter("myFilter", theFilter);
 			FailureReponse response = new FailureReponse();
 			response.setStatus("success");
 			return mapper.writer(filters).writeValueAsString(response);
 		} else {
-			SimpleBeanPropertyFilter theFilter = SimpleBeanPropertyFilter.serializeAllExcept("Communication");
+			SimpleBeanPropertyFilter theFilter = SimpleBeanPropertyFilter.serializeAllExcept("communication");
+			FilterProvider filters = new SimpleFilterProvider().addFilter("myFilter", theFilter);
+			FailureReponse response = new FailureReponse();
+			response.setStatus("failure");
+			response.setReason("Failed.....");
+			return mapper.writer(filters).writeValueAsString(response);
+		}
+	}
+	
+	private String prepareResponseForMarkMapping(String status) throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		if (status.equalsIgnoreCase("Success")) {
+			SimpleBeanPropertyFilter theFilter = SimpleBeanPropertyFilter.serializeAllExcept(new String[] {"reason"});
+			FilterProvider filters = new SimpleFilterProvider().addFilter("myFilter", theFilter);
+			FailureReponse response = new FailureReponse();
+			response.setStatus("success");
+			response.setCommunication("Communicate");
+			return mapper.writer(filters).writeValueAsString(response);
+		} else {
+			SimpleBeanPropertyFilter theFilter = SimpleBeanPropertyFilter.serializeAllExcept("communication");
 			FilterProvider filters = new SimpleFilterProvider().addFilter("myFilter", theFilter);
 			FailureReponse response = new FailureReponse();
 			response.setStatus("failure");

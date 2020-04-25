@@ -1,5 +1,8 @@
 package com.codeJudge.CRM.Model;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter("myFilter")
 public class FailureReponse {
 	private String status;
 	private String reason;
